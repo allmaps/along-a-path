@@ -182,7 +182,9 @@
     container.addEventListener('contextmenu', preventContextMenu)
     container.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
-    container.addEventListener('touchstart', handleTouchStart, { passive: true })
+    container.addEventListener('touchstart', handleTouchStart, {
+      passive: true
+    })
     window.addEventListener('touchend', handleTouchEnd)
 
     const setupMap = async () => {
@@ -303,7 +305,7 @@
   <div
     class:max-w-[calc(100%-5.5rem)]={showNavigationControl}
     class:max-w-[calc(100%-2rem)]={!showNavigationControl}
-    class="absolute left-4 top-4 z-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-slate-900/82 px-3 py-2 text-[0.8rem] font-semibold tracking-[0.04em] text-slate-50 backdrop-blur-[12px]"
+    class="absolute left-4 top-4 z-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-slate-900/82 px-3 py-2 text-[0.8rem] font-semibold tracking-[0.04em] text-slate-50 backdrop-blur-md"
   >
     {#if column.annotationUrl}
       <a
