@@ -1,0 +1,1 @@
+# Allmaps along a path
