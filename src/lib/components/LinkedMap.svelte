@@ -6,7 +6,7 @@
     CameraState,
     MapColumnConfig,
     PathsGeoJson
-  } from '$lib/map-types'
+  } from '$lib/map-types.js'
 
   type Props = {
     column: MapColumnConfig

@@ -150,28 +150,6 @@
     }
   }
 
-  function centerOnRoute(coordinates: LngLatTuple[]) {
-    if (coordinates.length === 0) {
-      return
-    }
-
-    const lngs = coordinates.map((coordinate) => coordinate[0])
-    const lats = coordinates.map((coordinate) => coordinate[1])
-    const start = coordinates[0]
-    const end = coordinates[1] ?? start
-
-    updateCamera({
-      center: [
-        (Math.min(...lngs) + Math.max(...lngs)) / 2,
-        (Math.min(...lats) + Math.max(...lats)) / 2
-      ],
-      zoom: camera.zoom,
-      bearing: bearingBetween(start, end),
-      pitch: camera.pitch,
-      source: 'route'
-    })
-  }
-
   function readInternationalString(value?: InternationalString) {
     if (!value) {
       return null
@@ -188,7 +166,9 @@
     return null
   }
 
-  function extractAnnotationLabel(resource?: AnnotationResource): string | null {
+  function extractAnnotationLabel(
+    resource?: AnnotationResource
+  ): string | null {
     if (!resource) {
       return null
     }
