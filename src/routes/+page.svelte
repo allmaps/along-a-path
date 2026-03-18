@@ -12,7 +12,7 @@
     PathsGeoJson
   } from '$lib/map-types'
 
-  const PLAYBACK_DURATION_MS = 30000
+  const PLAYBACK_DURATION_MS = 50000
   let mapColumns = $state<MapColumnConfig[]>(DEFAULT_MAP_COLUMNS)
 
   const emptyRoute: PathsGeoJson = { type: 'FeatureCollection', features: [] }
