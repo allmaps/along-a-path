@@ -42,6 +42,12 @@
 
   let showStylePopup = $state(false)
   let copied = $state(false)
+  let highlightedHtml = $state<string | null>(null)
+
+  async function highlightCode(code: string) {
+    const { highlight } = await import('$lib/highlight.js')
+    highlightedHtml = await highlight(code)
+  }
 
   function generateStyleCode(column: {
     style: StyleSpecification | string
@@ -69,6 +75,13 @@
       2
     )
     return `map.addSource('${sourceId}', ${sourceCode});\n\nmap.addLayer(${layerCode});`
+  }
+
+  function openStylePopup() {
+    showStylePopup = !showStylePopup
+    if (showStylePopup && !highlightedHtml) {
+      void highlightCode(generateStyleCode(column))
+    }
   }
 
   function copyStyle() {
@@ -380,7 +393,7 @@
         type="button"
         aria-label="Copy MapLibre style code"
         onclick={() => {
-          showStylePopup = !showStylePopup
+          openStylePopup()
         }}
         class="flex shrink-0 cursor-pointer items-center justify-center rounded-full p-0.5 opacity-60 transition-opacity hover:opacity-100"
         class:opacity-100={showStylePopup}
@@ -430,10 +443,12 @@
           <XIcon size={14} weight="bold" />
         </button>
       </div>
-      <pre
-        class="overflow-x-auto px-4 py-3 text-[0.72rem] leading-relaxed text-slate-300"><code
-          >{generateStyleCode(column)}</code
-        ></pre>
+      {#if highlightedHtml}
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        <div class="shiki-wrapper overflow-x-auto">{@html highlightedHtml}</div>
+      {:else}
+        <pre class="overflow-x-auto px-4 py-3 text-[0.72rem] leading-relaxed text-slate-300"><code>{generateStyleCode(column)}</code></pre>
+      {/if}
       <div class="border-t border-white/10 px-4 py-2.5">
         <button
           type="button"
@@ -452,3 +467,19 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .shiki-wrapper :global(pre) {
+    padding: 0.75rem 1rem;
+    font-size: 0.72rem;
+    line-height: 1.6;
+    background: transparent !important;
+  }
+
+  .shiki-wrapper :global(code) {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+</style>
