@@ -1,7 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { XIcon } from 'phosphor-svelte'
-  import type { GeoJSONSource, LngLatLike, Map } from 'maplibre-gl'
+  import { CheckIcon, CodeIcon, CopyIcon, XIcon } from 'phosphor-svelte'
+  import type {
+    GeoJSONSource,
+    LngLatLike,
+    Map,
+    RasterLayerSpecification,
+    RasterSourceSpecification,
+    StyleSpecification
+  } from 'maplibre-gl'
 
   import type {
     CameraState,
@@ -32,6 +39,48 @@
   }: Props = $props()
 
   let container: HTMLDivElement
+
+  let showStylePopup = $state(false)
+  let copied = $state(false)
+
+  function generateStyleCode(column: {
+    style: StyleSpecification | string
+  }): string {
+    if (typeof column.style === 'string') return ''
+    const spec = column.style as StyleSpecification
+    const sourceId = Object.keys(spec.sources)[0]
+    if (!sourceId) return ''
+    const source = spec.sources[sourceId] as RasterSourceSpecification
+    const layer = spec.layers[0] as RasterLayerSpecification
+    const sourceCode = JSON.stringify(
+      {
+        type: source.type,
+        tiles: source.tiles,
+        tileSize: source.tileSize,
+        attribution: source.attribution,
+        maxzoom: source.maxzoom
+      },
+      null,
+      2
+    )
+    const layerCode = JSON.stringify(
+      { id: layer.id, type: layer.type, source: layer.source },
+      null,
+      2
+    )
+    return `map.addSource('${sourceId}', ${sourceCode});\n\nmap.addLayer(${layerCode});`
+  }
+
+  function copyStyle() {
+    if (!column.annotationUrl) return
+    const code = generateStyleCode(column)
+    navigator.clipboard.writeText(code).then(() => {
+      copied = true
+      setTimeout(() => {
+        copied = false
+      }, 2000)
+    })
+  }
 
   let map: Map | null = null
   let isApplyingSync = false
@@ -309,8 +358,8 @@
     class:max-w-[calc(100%-5.5rem)]={showNavigationControl}
     class:max-w-[calc(100%-2rem)]={!showNavigationControl}
     class="absolute left-4 top-4 z-1 flex items-center gap-1.5 rounded-full bg-slate-900/82 py-1.5 pl-3 text-[0.8rem] font-semibold tracking-[0.04em] text-slate-50 backdrop-blur-md"
-    class:pr-2={onRemove}
-    class:pr-3={!onRemove}
+    class:pr-2={onRemove || column.annotationUrl}
+    class:pr-3={!onRemove && !column.annotationUrl}
   >
     <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
       {#if column.annotationUrl}
@@ -326,6 +375,19 @@
         {column.label}
       {/if}
     </span>
+    {#if column.annotationUrl}
+      <button
+        type="button"
+        aria-label="Copy MapLibre style code"
+        onclick={() => {
+          showStylePopup = !showStylePopup
+        }}
+        class="flex shrink-0 cursor-pointer items-center justify-center rounded-full p-0.5 opacity-60 transition-opacity hover:opacity-100"
+        class:opacity-100={showStylePopup}
+      >
+        <CodeIcon size={12} weight="bold" />
+      </button>
+    {/if}
     {#if onRemove}
       <button
         type="button"
@@ -337,4 +399,56 @@
       </button>
     {/if}
   </div>
+
+  {#if showStylePopup && column.annotationUrl}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+    <div
+      role="presentation"
+      class="absolute inset-0 z-0"
+      onclick={() => {
+        showStylePopup = false
+      }}
+    ></div>
+    <div
+      class="absolute left-4 top-14 z-2 w-[min(26rem,calc(100%-2rem))] rounded-xl border border-white/10 bg-slate-950/95 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+    >
+      <div
+        class="flex items-center justify-between border-b border-white/10 px-4 py-2.5"
+      >
+        <span
+          class="text-[0.75rem] font-semibold tracking-[0.06em] text-slate-400 uppercase"
+          >MapLibre style snippet</span
+        >
+        <button
+          type="button"
+          aria-label="Close"
+          onclick={() => {
+            showStylePopup = false
+          }}
+          class="cursor-pointer text-slate-400 opacity-60 transition-opacity hover:opacity-100"
+        >
+          <XIcon size={14} weight="bold" />
+        </button>
+      </div>
+      <pre
+        class="overflow-x-auto px-4 py-3 text-[0.72rem] leading-relaxed text-slate-300"><code
+          >{generateStyleCode(column)}</code
+        ></pre>
+      <div class="border-t border-white/10 px-4 py-2.5">
+        <button
+          type="button"
+          onclick={copyStyle}
+          class="flex cursor-pointer items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[0.75rem] font-semibold text-slate-50 transition-[transform,background-color] duration-150 hover:-translate-y-px hover:bg-white/16"
+        >
+          {#if copied}
+            <CheckIcon size={13} weight="bold" />
+            Copied!
+          {:else}
+            <CopyIcon size={13} weight="bold" />
+            Copy code
+          {/if}
+        </button>
+      </div>
+    </div>
+  {/if}
 </div>

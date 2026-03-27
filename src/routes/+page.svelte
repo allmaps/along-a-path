@@ -418,9 +418,7 @@
         useHash={index === 0}
         showNavigationControl={index === visibleColumns.length - 1}
         onCameraChange={updateCamera}
-        onRemove={column.id !== 'osm'
-          ? () => removeColumn(column.id)
-          : undefined}
+        onRemove={canRemove ? () => removeColumn(column.id) : undefined}
       />
     {/each}
   </section>
