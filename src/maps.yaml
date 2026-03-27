@@ -1,0 +1,48 @@
+- title: 'Composite: 1-164 San Francisco Aerial Views.'
+  url: https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~217219~5504219
+  manifest: https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~217219~5504219/manifest
+  image: https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~217219~5504219
+  annotation: https://annotations.allmaps.org/manifests/61ce397dcfa2bb49
+
+- title: 'Composite: San Francisco Model'
+  url: https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~313399~90082563
+  manifest: https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~313399~90082563/manifest
+  image: https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~313399~90082563
+  annotation: https://annotations.allmaps.org/manifests/085e15806bb30c5d
+
+- title: 'Map Exhibiting The Salt Marsh, Tide And Submerged Lands Disposed Of By The State Of California In And Adjacent To The Bays Of San Francisco And San Pablo And Now Subject To Reclamation, 1874'
+  url: https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~3329~360047
+  manifest: https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~3329~360047/manifest
+  image: https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~3329~360047
+  annotation: https://annotations.allmaps.org/manifests/65ff7ec0d1c81f01
+
+- title: 'San Francisco & vicinity.'
+  url: https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~2210~180022
+  manifest: https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~2210~180022/manifest
+  image: https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~2210~180022
+  annotation: https://annotations.allmaps.org/manifests/e12f285aa63a41ab
+
+- title: 'San Francisco Peninsula'
+  url: https://purl.stanford.edu/td556bf8387
+  manifest: https://purl.stanford.edu/td556bf8387/iiif/manifest
+  image: https://stacks.stanford.edu/image/iiif/td556bf8387%2Ftd556bf8387_00_0001
+  annotation: https://annotations.allmaps.org/maps/3c28b9957511e9ec
+
+# - title: Cycling maps of California
+#   url: https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no=%221592.000%22
+#   collection: https://www.davidrumsey.com/luna/servlet/iiif/collection/s/cyt4my
+
+# CA Water Atlas
+# https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no%3d%225788.000%22&qvq=sort:pub_list_no_initialsort%2Cpub_date%2Cpub_list_no%2Cseries_no;lc:RUMSEY~8~1&mi=0
+
+# Seep City; contemporary map and project by Joel Pomerantz
+# https://www.davidrumsey.com/luna/servlet/view/search?q=pub_list_no%3d%2212427.000%22&qvq=lc:RUMSEY~8~1&mi=0
+
+# Collage SF 2025 by my friend Nishino Sohei
+# https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~374209~90140801:San-Francisco?sort=pub_list_no_initialsort%2Cpub_date%2Cpub_list_no%2Cseries_no&mi=20&trs=5719&qvq=q:san%20francisco%20map;sort:pub_list_no_initialsort%2Cpub_date%2Cpub_list_no%2Cseries_no;lc:RUMSEY~8~1
+
+- title: '(San Francisco) Comprehensive trafficways plan. Trafficways 11 Plate 8'
+  url: https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~258970~5522255
+  manifest: https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~258970~5522255/manifest
+  image: https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~258970~5522255
+  annotation: https://annotations.allmaps.org/manifests/65585981be3d05ad

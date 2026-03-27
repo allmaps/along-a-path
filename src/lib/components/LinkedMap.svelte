@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { XIcon } from 'phosphor-svelte'
   import type { GeoJSONSource, LngLatLike, Map } from 'maplibre-gl'
 
   import type {
@@ -16,6 +17,7 @@
     useHash?: boolean
     showNavigationControl?: boolean
     onCameraChange: (camera: Omit<CameraState, 'sequence'>) => void
+    onRemove?: () => void
   }
 
   let {
@@ -25,7 +27,8 @@
     routeData,
     useHash = false,
     showNavigationControl = false,
-    onCameraChange
+    onCameraChange,
+    onRemove
   }: Props = $props()
 
   let container: HTMLDivElement
@@ -305,19 +308,33 @@
   <div
     class:max-w-[calc(100%-5.5rem)]={showNavigationControl}
     class:max-w-[calc(100%-2rem)]={!showNavigationControl}
-    class="absolute left-4 top-4 z-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-slate-900/82 px-3 py-2 text-[0.8rem] font-semibold tracking-[0.04em] text-slate-50 backdrop-blur-md"
+    class="absolute left-4 top-4 z-1 flex items-center gap-1.5 rounded-full bg-slate-900/82 py-1.5 pl-3 text-[0.8rem] font-semibold tracking-[0.04em] text-slate-50 backdrop-blur-md"
+    class:pr-2={onRemove}
+    class:pr-3={!onRemove}
   >
-    {#if column.annotationUrl}
-      <a
-        href={`https://viewer.allmaps.org/?url=${encodeURIComponent(column.annotationUrl)}`}
-        target="_blank"
-        rel="noreferrer"
-        class="hover:underline"
-      >
+    <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+      {#if column.annotationUrl}
+        <a
+          href={`https://viewer.allmaps.org/?url=${encodeURIComponent(column.annotationUrl)}`}
+          target="_blank"
+          rel="noreferrer"
+          class="hover:underline"
+        >
+          {column.label}
+        </a>
+      {:else}
         {column.label}
-      </a>
-    {:else}
-      <span>{column.label}</span>
+      {/if}
+    </span>
+    {#if onRemove}
+      <button
+        type="button"
+        aria-label="Remove pane"
+        onclick={onRemove}
+        class="flex shrink-0 cursor-pointer items-center justify-center rounded-full p-0.5 opacity-60 transition-opacity hover:opacity-100"
+      >
+        <XIcon size={12} weight="bold" />
+      </button>
     {/if}
   </div>
 </div>

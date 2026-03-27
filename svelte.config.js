@@ -8,14 +8,7 @@ const config = {
     }),
     paths: {
       base: '/along-a-path'
-    },
-    prerender: {
-      entries: ['*']
     }
-  },
-  vitePlugin: {
-    dynamicCompileOptions: ({ filename }) =>
-      filename.includes('node_modules') ? undefined : { runes: true }
   }
 }
 

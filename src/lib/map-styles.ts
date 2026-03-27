@@ -1,15 +1,24 @@
-import type { StyleSpecification } from 'maplibre-gl'
+import { generateId } from '@allmaps/id'
 
 import { allmapsBasemapStyle } from '$lib/allmaps-base-style.js'
+
+import type { StyleSpecification } from 'maplibre-gl'
+
 import type { MapColumnConfig } from '$lib/map-types.js'
 
-function makeAllmapsRasterStyle(mapId: string): StyleSpecification {
+async function makeAllmapsRasterStyle(
+  annotationUrl: string
+): Promise<StyleSpecification> {
+  const id = await generateId(annotationUrl)
+
   return {
     version: 8,
     sources: {
-      [mapId]: {
+      [id]: {
         type: 'raster',
-        tiles: [`https://dev.allmaps.xyz/maps/${mapId}/{z}/{x}/{y}@2x.webp`],
+        tiles: [
+          `https://dev.allmaps.xyz/{z}/{x}/{y}@2x.webp?url=${encodeURIComponent(annotationUrl)}`
+        ],
         tileSize: 256,
         attribution:
           '&copy; <a href="https://www.allmaps.org/">Allmaps</a> contributors',
@@ -18,13 +27,21 @@ function makeAllmapsRasterStyle(mapId: string): StyleSpecification {
     },
     layers: [
       {
-        id: mapId,
+        id: id,
         type: 'raster',
-        source: mapId
+        source: id
       }
     ]
   }
 }
+
+const annotationUrls = [
+  'https://annotations.allmaps.org/maps/2768e9fd1d41e55c',
+  'https://annotations.allmaps.org/maps/045cdafd6e043bd1',
+  'https://annotations.allmaps.org/maps/41c07b2ee3fe0073',
+  'https://annotations.allmaps.org/maps/3c28b9957511e9ec',
+  'https://annotations.allmaps.org/maps/5a2dd967f983cd46'
+]
 
 export const DEFAULT_MAP_COLUMNS: MapColumnConfig[] = [
   {
@@ -32,22 +49,12 @@ export const DEFAULT_MAP_COLUMNS: MapColumnConfig[] = [
     label: 'OpenStreetMap',
     style: allmapsBasemapStyle('en')
   },
-  {
-    id: 'allmaps/maps/045cdafd6e043bd1',
-    label: 'Map #2',
-    style: makeAllmapsRasterStyle('045cdafd6e043bd1'),
-    annotationUrl: 'https://annotations.allmaps.org/maps/045cdafd6e043bd1'
-  },
-  {
-    id: 'allmaps/maps/2768e9fd1d41e55c',
-    label: 'Map #3',
-    style: makeAllmapsRasterStyle('2768e9fd1d41e55c'),
-    annotationUrl: 'https://annotations.allmaps.org/maps/2768e9fd1d41e55c'
-  },
-  {
-    id: 'allmaps/maps/41c07b2ee3fe0073',
-    label: 'Map #4',
-    style: makeAllmapsRasterStyle('41c07b2ee3fe0073'),
-    annotationUrl: 'https://annotations.allmaps.org/maps/41c07b2ee3fe0073'
-  }
+  ...(await Promise.all(
+    annotationUrls.map(async (url, index) => ({
+      id: url.replace('https://annotations.allmaps.org/', 'allmaps/'),
+      label: `Map #${index + 2}`,
+      style: await makeAllmapsRasterStyle(url),
+      annotationUrl: url
+    }))
+  ))
 ]

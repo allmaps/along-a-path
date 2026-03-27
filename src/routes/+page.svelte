@@ -1,7 +1,13 @@
 <script lang="ts">
   import { base } from '$app/paths'
   import { onMount } from 'svelte'
-  import { ArrowCounterClockwise, Pause, Play } from 'phosphor-svelte'
+  import {
+    ArrowCounterClockwiseIcon,
+    MinusIcon,
+    PauseIcon,
+    PlayIcon,
+    PlusIcon
+  } from 'phosphor-svelte'
 
   import LinkedMap from '$lib/components/LinkedMap.svelte'
   import { DEFAULT_MAP_COLUMNS } from '$lib/map-styles'
@@ -13,7 +19,13 @@
   } from '$lib/map-types'
 
   const PLAYBACK_DURATION_MS = 50000
-  let mapColumns = $state<MapColumnConfig[]>(DEFAULT_MAP_COLUMNS)
+  let allColumns = $state<MapColumnConfig[]>(DEFAULT_MAP_COLUMNS)
+  let visibleColumnIds = $state<string[]>(DEFAULT_MAP_COLUMNS.map((c) => c.id))
+  let visibleColumns = $derived(
+    allColumns.filter((c) => visibleColumnIds.includes(c.id))
+  )
+  let canRemove = $derived(visibleColumnIds.length > 1)
+  let canAdd = $derived(visibleColumnIds.length < allColumns.length)
 
   const emptyRoute: PathsGeoJson = { type: 'FeatureCollection', features: [] }
 
@@ -215,7 +227,26 @@
       })
     )
 
-    mapColumns = resolvedColumns
+    allColumns = resolvedColumns
+  }
+
+  function removeLastColumn() {
+    if (visibleColumnIds.length > 1) {
+      visibleColumnIds = visibleColumnIds.slice(0, -1)
+    }
+  }
+
+  function removeColumn(id: string) {
+    if (visibleColumnIds.length > 1) {
+      visibleColumnIds = visibleColumnIds.filter((vid) => vid !== id)
+    }
+  }
+
+  function addColumn() {
+    const next = allColumns.find((c) => !visibleColumnIds.includes(c.id))
+    if (next) {
+      visibleColumnIds = [...visibleColumnIds, next.id]
+    }
   }
 
   function stopPlayback() {
@@ -318,7 +349,7 @@
       routeCenter = null
     }
 
-    void loadColumnLabels(DEFAULT_MAP_COLUMNS)
+    void loadColumnLabels(DEFAULT_MAP_COLUMNS as MapColumnConfig[])
     void loadRoute()
 
     return () => {
@@ -352,21 +383,44 @@
         rel="noopener noreferrer">allmaps.org</a
       > for more information</span
     >
+    <div class="ml-auto flex items-center gap-1">
+      <button
+        type="button"
+        aria-label="Remove rightmost pane"
+        disabled={!canRemove}
+        onclick={removeLastColumn}
+        class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-white/10 text-slate-50 transition-[transform,background-color] duration-150 ease-in-out hover:-translate-y-px hover:bg-white/16 disabled:pointer-events-none disabled:opacity-30"
+      >
+        <MinusIcon size={14} weight="bold" />
+      </button>
+      <button
+        type="button"
+        aria-label="Add next pane"
+        disabled={!canAdd}
+        onclick={addColumn}
+        class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-white/10 text-slate-50 transition-[transform,background-color] duration-150 ease-in-out hover:-translate-y-px hover:bg-white/16 disabled:pointer-events-none disabled:opacity-30"
+      >
+        <PlusIcon size={14} weight="bold" />
+      </button>
+    </div>
   </header>
 
   <section
     class="grid h-full"
-    style={`grid-template-columns: repeat(${mapColumns.length}, minmax(0, 1fr));`}
+    style={`grid-template-columns: repeat(${visibleColumns.length}, minmax(0, 1fr));`}
   >
-    {#each mapColumns as column, index (column.id)}
+    {#each visibleColumns as column, index (column.id)}
       <LinkedMap
         {column}
         {camera}
         {routeCenter}
         routeData={routeData ?? emptyRoute}
         useHash={index === 0}
-        showNavigationControl={index === mapColumns.length - 1}
+        showNavigationControl={index === visibleColumns.length - 1}
         onCameraChange={updateCamera}
+        onRemove={column.id !== 'osm'
+          ? () => removeColumn(column.id)
+          : undefined}
       />
     {/each}
   </section>
@@ -380,7 +434,7 @@
       aria-label="Restart from beginning"
       onclick={restartPlayback}
     >
-      <ArrowCounterClockwise size={20} weight="bold" />
+      <ArrowCounterClockwiseIcon size={20} weight="bold" />
     </button>
     <button
       class:border-0={true}
@@ -396,9 +450,9 @@
       onclick={togglePlayback}
     >
       {#if isPlaying}
-        <Pause size={20} weight="fill" />
+        <PauseIcon size={20} weight="fill" />
       {:else}
-        <Play size={20} weight="fill" />
+        <PlayIcon size={20} weight="fill" />
       {/if}
     </button>
   </div>
